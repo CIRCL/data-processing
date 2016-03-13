@@ -1,0 +1,8 @@
+[redis]
+host=127.0.0.1
+port=6399
+
+[fast-lookup]
+misp_url=https://misppriv.circl.lu
+webservice_url=http://127.0.0.1:5000/json
+authkey=<Your auth key>
