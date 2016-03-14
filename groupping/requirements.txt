@@ -4,3 +4,4 @@ future
 https://github.com/erocarrera/pefile/releases/download/v2016.3.4/pefile-2016.3.4.zip
 redis
 hashlib
+python-dateutil
