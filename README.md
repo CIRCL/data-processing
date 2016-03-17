@@ -1,7 +1,7 @@
 The project was initiated by Marion Marschalek (G-data) and Raphaël Vinot (CIRCL) for a prensentation at Troopers called
 [THE KINGS IN YOUR CASTLE - All the lame threats that own you but will never make you famous](https://www.troopers.de/events/troopers16/599_the_kings_in_your_castle_-_all_the_lame_threats_that_own_you_but_will_never_make_you_famous/).
 
-The idea is to use the data stored and classified in MISP in order to derivate trends and uncoder correlations between events.
+The idea is to use the data stored and classified in MISP in order to derivate trends and uncover correlations between events.
 
 # Introduction
 
