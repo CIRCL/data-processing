@@ -1,5 +1,5 @@
 misp-fast-lookup
-pydeep
+git+https://github.com/kbandla/pydeep.git
 future
 pefile
 redis

@@ -5,7 +5,11 @@ import hashlib
 import os
 import argparse
 import redis
-from ConfigParser import SafeConfigParser
+try:
+    from configparser import SafeConfigParser
+except ImportError:
+    # Python2
+    from ConfigParser import SafeConfigParser
 
 from misp_fast_lookup import search
 from subprocess import Popen, PIPE
@@ -23,7 +27,7 @@ def import_dir(directory, r):
     for (dirpath, dirnames, filenames) in os.walk(args.dir):
         for filename in filenames:
             path = os.path.join(dirpath, filename)
-            content = file(path, 'rb').read()
+            content = open(path, 'rb').read()
             md5 = hashlib.md5(content).hexdigest()
             sha1 = hashlib.sha1(content).hexdigest()
             sha256 = hashlib.sha256(content).hexdigest()
@@ -48,7 +52,7 @@ if __name__ == '__main__':
     config = SafeConfigParser()
     config.read(args.config)
 
-    r = redis.StrictRedis(host=config.get('redis', 'host'), port=config.get('redis', 'port'))
+    r = redis.StrictRedis(host=config.get('redis', 'host'), port=config.get('redis', 'port'), decode_responses=True)
 
     if args.dir:
         md5, sha1, sha256 = import_dir(args.dir, r)
@@ -61,17 +65,17 @@ if __name__ == '__main__':
         webservice_url = config.get('fast-lookup', 'webservice_url')
         authkey = config.get('fast-lookup', 'authkey')
         eids = search(webservice_url, misp_url, authkey, value=list(r.smembers('hashes_md5')), return_eid=True)
-        correlations = zip(r.smembers('hashes_md5'), eids)
+        correlations = list(zip(r.smembers('hashes_md5'), eids))
         eids = search(webservice_url, misp_url, authkey, value=list(r.smembers('hashes_sha1')), return_eid=True)
-        correlations += zip(r.smembers('hashes_sha1'), eids)
+        correlations += list(zip(r.smembers('hashes_sha1'), eids))
         eids = search(webservice_url, misp_url, authkey, value=list(r.smembers('hashes_sha256')), return_eid=True)
-        correlations += zip(r.smembers('hashes_sha256'), eids)
+        correlations += list(zip(r.smembers('hashes_sha256'), eids))
         for h, eids in correlations:
             if not eids:
                 continue
             r.sadd('{}:eids'.format(h), *eids)
     elif args.pe:
-        p = Popen(['parallel', './pe_parse.py', '-c', args.config], stdout=PIPE, stdin=PIPE, stderr=PIPE)
+        p = Popen(['parallel', './pe_parse.py', '-c', args.config], stdout=PIPE, stdin=PIPE, stderr=PIPE, universal_newlines=True)
         p.communicate(input='\n'.join(r.smembers('hashes_sha256')))
         while p.poll() is None:
             time.sleep(1)

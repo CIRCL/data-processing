@@ -6,7 +6,11 @@ import datetime
 import math
 import argparse
 import redis
-from ConfigParser import SafeConfigParser
+try:
+    from configparser import SafeConfigParser
+except ImportError:
+    # Python2
+    from ConfigParser import SafeConfigParser
 
 
 # Return section ID and name of EP section in the form name|id
