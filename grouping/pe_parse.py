@@ -22,10 +22,8 @@ def check_ep_section(pe):
         return False
     pos = 0
     for sec in pe.sections:
-        if (ep >= sec.VirtualAddress) and \
-           (ep < (sec.VirtualAddress + sec.Misc_VirtualSize)):
-            name = sec.Name.replace('\x00', '')
-            name = name.decode("ascii", "ignore")
+        if (ep >= sec.VirtualAddress) and (ep < (sec.VirtualAddress + sec.Misc_VirtualSize)):
+            name = sec.Name.decode('utf-8', 'ignore').replace('\x00', '')
             break
         else:
             pos += 1
@@ -90,7 +88,7 @@ def get_attr_pe(r, sha256):
 
     # Section info: names, sizes, entropy vals
     for section in pe.sections:
-        name = section.Name.replace('\x00', '')
+        name = section.Name.decode('utf-8', 'ignore').replace('\x00', '')
         r.sadd('{}:secnames'.format(sha256), name)
         r.hset('{}:{}'.format(sha256, name), 'size', section.SizeOfRawData)
         r.hset('{}:{}'.format(sha256, name), 'entropy', H(section.get_data()))
@@ -108,10 +106,9 @@ def H(data):
 
     entropy = 0
     for x in range(256):
-        p_x = float(data.count(chr(x))) / len(data)
+        p_x = float(data.count(bytes(x))) / len(data)
         if p_x > 0:
             entropy += - p_x * math.log(p_x, 2)
-
     return entropy
 
 
@@ -144,7 +141,7 @@ if __name__ == '__main__':
     config = SafeConfigParser()
     config.read(args.config)
 
-    r = redis.StrictRedis(host=config.get('redis', 'host'), port=config.get('redis', 'port'))
+    r = redis.StrictRedis(host=config.get('redis', 'host'), port=config.get('redis', 'port'), decode_responses=True)
 
     if get_attr_pe(r, args.filehash):
         eval_packed(r, args.filehash)

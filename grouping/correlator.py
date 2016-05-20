@@ -76,10 +76,10 @@ if __name__ == '__main__':
             r.sadd('{}:eids'.format(h), *eids)
     elif args.pe:
         p = Popen(['parallel', './pe_parse.py', '-c', args.config], stdout=PIPE, stdin=PIPE, stderr=PIPE, universal_newlines=True)
-        p.communicate(input='\n'.join(r.smembers('hashes_sha256')))
+        out, err = p.communicate(input='\n'.join(r.smembers('hashes_sha256')))
         while p.poll() is None:
             time.sleep(1)
-
+        print(err)
     if args.dump:
         writer = csv.writer(sys.stdout)
         all_hashes = r.smembers('hashes_md5').union(r.smembers('hashes_sha1')).union(r.smembers('hashes_sha256'))
