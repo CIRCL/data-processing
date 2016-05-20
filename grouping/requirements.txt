@@ -1,7 +1,6 @@
 misp-fast-lookup
 pydeep
 future
-https://github.com/erocarrera/pefile/releases/download/v2016.3.4/pefile-2016.3.4.zip
+pefile
 redis
-hashlib
 python-dateutil
