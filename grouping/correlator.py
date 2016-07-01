@@ -41,7 +41,7 @@ def import_dir(directory, r):
 
 
 def search_misp_values(r, values, return_eventid=True):
-    to_search = ['hashstore:{}'.format(SHA256.new(v.lower()).hexdigest()) for v in values]
+    to_search = ['hashstore:{}'.format(SHA256.new(v.lower().encode()).hexdigest()) for v in values]
     uuid_by_hashes = [r.smembers(k) for k in to_search]
     if not return_eventid:
         return uuid_by_hashes

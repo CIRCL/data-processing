@@ -3,7 +3,12 @@
 
 import argparse
 import redis
-from ConfigParser import SafeConfigParser
+try:
+    from configparser import SafeConfigParser
+except ImportError:
+    # Python2
+    from ConfigParser import SafeConfigParser
+
 
 if __name__ == '__main__':
 

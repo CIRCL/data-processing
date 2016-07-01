@@ -80,7 +80,7 @@ def get_attr_pe(r, sha256):
         for entry in pe.FileInfo:
             if hasattr(entry, 'StringTable'):
                 for st_entry in entry.StringTable:
-                    ofn = st_entry.entries.get('OriginalFilename')
+                    ofn = st_entry.entries.get(b'OriginalFilename')
                     if ofn:
                         r.hset(sha256, 'originalfilename', ofn)
                         r.zincrby('originalfilenames', ofn)
