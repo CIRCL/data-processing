@@ -1,4 +1,3 @@
-misp-fast-lookup
 git+https://github.com/kbandla/pydeep.git
 future
 pefile
