@@ -11,12 +11,12 @@ except ImportError:
     # Python2
     from ConfigParser import SafeConfigParser
 
-from misp_fast_lookup import search
 from subprocess import Popen, PIPE
 import csv
 import sys
 import pydeep
 import time
+from Crypto.Hash import SHA256
 
 
 def import_dir(directory, r):
@@ -39,6 +39,16 @@ def import_dir(directory, r):
     p.execute()
     return md5s, sha1s, sha256s
 
+
+def search_misp_values(r, values, return_eventid=True):
+    to_search = ['hashstore:{}'.format(SHA256.new(v.lower()).hexdigest()) for v in values]
+    uuid_by_hashes = [r.smembers(k) for k in to_search]
+    if not return_eventid:
+        return uuid_by_hashes
+    to_return = []
+    for h in uuid_by_hashes:
+        to_return.append([r.hget('uuid_id', uuid) for uuid in h])
+    return to_return
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate database')
@@ -64,11 +74,11 @@ if __name__ == '__main__':
         misp_url = config.get('fast-lookup', 'misp_url')
         webservice_url = config.get('fast-lookup', 'webservice_url')
         authkey = config.get('fast-lookup', 'authkey')
-        eids = search(webservice_url, misp_url, authkey, value=list(r.smembers('hashes_md5')), return_eid=True)
+        eids = search_misp_values(r, list(r.smembers('hashes_md5')))
         correlations = list(zip(r.smembers('hashes_md5'), eids))
-        eids = search(webservice_url, misp_url, authkey, value=list(r.smembers('hashes_sha1')), return_eid=True)
+        eids = search_misp_values(r, list(r.smembers('hashes_sha1')))
         correlations += list(zip(r.smembers('hashes_sha1'), eids))
-        eids = search(webservice_url, misp_url, authkey, value=list(r.smembers('hashes_sha256')), return_eid=True)
+        eids = search_misp_values(r, list(r.smembers('hashes_sha256')))
         correlations += list(zip(r.smembers('hashes_sha256'), eids))
         for h, eids in correlations:
             if not eids:

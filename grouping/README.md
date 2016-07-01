@@ -42,7 +42,7 @@ After you run this script, you get a redis database containing keys like the fol
     <sha256> hash('md5': <md5>, 'sha1': <sha1>, 'filename': <filename>, 'path': <path>, 'ssdeep': <ssdeep>)
 ```
 
-The second step (optional) is to query the fast redis lookup web service to get all the event ID associated to the hashes:
+The second step is to associate all your samples to their MISP event:
 
 ```
     ./correlator.py -e
