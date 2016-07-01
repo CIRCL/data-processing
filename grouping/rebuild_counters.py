@@ -19,7 +19,7 @@ if __name__ == '__main__':
     config = SafeConfigParser()
     config.read(args.config)
 
-    r = redis.StrictRedis(host=config.get('redis', 'host'), port=config.get('redis', 'port'))
+    r = redis.StrictRedis(host=config.get('redis', 'host'), port=config.get('redis', 'port'), decode_responses=True)
 
     r.delete('timestamps', 'imphashs', 'entrypoints', 'secnumbers', 'originalfilenames')
 
