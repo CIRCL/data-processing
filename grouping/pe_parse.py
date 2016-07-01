@@ -82,9 +82,13 @@ def get_attr_pe(r, sha256):
                 for st_entry in entry.StringTable:
                     ofn = st_entry.entries.get(b'OriginalFilename')
                     if ofn:
-                        r.hset(sha256, 'originalfilename', ofn)
-                        r.zincrby('originalfilenames', ofn)
-                        r.sadd(u'originalfilename:{}'.format(ofn), sha256)
+                        if type(ofn, bytes):
+                            o = ofn.decode()
+                        else:
+                            o = ofn
+                        r.hset(sha256, 'originalfilename', o)
+                        r.zincrby('originalfilenames', o)
+                        r.sadd(u'originalfilename:{}'.format(o), sha256)
 
     # Section info: names, sizes, entropy vals
     for section in pe.sections:
