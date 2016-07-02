@@ -82,7 +82,7 @@ def get_attr_pe(r, sha256):
                 for st_entry in entry.StringTable:
                     ofn = st_entry.entries.get(b'OriginalFilename')
                     if ofn:
-                        if type(ofn, bytes):
+                        if isinstance(ofn, bytes):
                             o = ofn.decode()
                         else:
                             o = ofn
